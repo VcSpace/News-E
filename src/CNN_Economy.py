@@ -76,7 +76,8 @@ class CNN(object):
             print("CNN Save Error = 1")
 
 
-    def create_file(self):
+    def create_file(self, file_name):
+        self.xlsxname = file_name
         wb = Workbook()
         ws = wb['Sheet']
         wb.remove(ws)
@@ -118,8 +119,7 @@ class CNN(object):
             print("CNN Save Error = 2")
 
     def main(self, file_name):
-        self.xlsxname = file_name
-        Cnn.create_file()
+        Cnn.create_file(file_name)
         Cnn.request()
         Cnn.get_business()
         Cnn.request2()
