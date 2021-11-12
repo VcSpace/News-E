@@ -3,13 +3,16 @@ import os
 
 from src.Platform import pt
 from src.CNN_Economy import Cnn
+from src.FOX_Economy import Fox
 
 def get_News(platform, filename, debug):
     #debug True开启
     if debug:
         Cnn.create_file(filename)
+        Fox.main(filename)
         return
     Cnn.main(filename)
+    Fox.main(filename)
 
 def get_filename(platform):
     if platform == True:
