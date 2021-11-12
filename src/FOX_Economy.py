@@ -44,7 +44,7 @@ class FOX(object):
 
         t_row = 1
         t_col = 1
-        sheet.cell(row=t_row, column=t_col, value="东方财富")
+        sheet.cell(row=t_row, column=t_col, value="Fox市场")
         t_row = t_row + 1
         sheet.cell(row=t_row, column=t_col, value="新闻标题")
         sheet.cell(row=t_row, column=t_col + 1, value="新闻链接")
@@ -76,25 +76,65 @@ class FOX(object):
         datalist = self.bs_soup.select('#wrapper > div > div.page-content > main > div.collection.collection-river.content > div')
         i = 1
         for data in datalist:
-            news = data.find_all('a')
+            news = data.find_all(class_='title')
             for m_news in news:
-                if i % 2 == 0:
-                    m_href = m_news['href']
-                    m_title = m_news.get_text()
-                    m_href = self.have_video(m_href)
-                    sheet.cell(row=t_row, column=t_col, value=m_title)
-                    sheet.cell(row=t_row, column=t_col + 1, value=m_href)
-                    t_row = t_row + 1
-                i = i + 1
+                m_news = m_news.find('a')
+                m_href = m_news['href']
+                m_title = m_news.get_text()
+                m_href = self.have_video(m_href)
+                sheet.cell(row=t_row, column=t_col, value=m_title)
+                sheet.cell(row=t_row, column=t_col + 1, value=m_href)
+                t_row = t_row + 1
 
         try:
             wb.save(self.xlsxname)
         except Exception:
             print("FOX Save Error = 1")
 
+    def get_en_news(self):
+        wb = load_workbook(self.xlsxname)
+        sheet = wb.get_sheet_by_name("Fox")
+        t_row = sheet.max_row + 2
+        t_col = 1
+        sheet.cell(row=t_row, column=t_col, value="Fox经济")
+        t_row = t_row + 1
+        sheet.cell(row=t_row, column=t_col, value="新闻标题")
+        sheet.cell(row=t_row, column=t_col + 1, value="新闻链接")
+        sheet.cell(row=t_row, column=t_col + 2, value="新闻简介")
+        sheet.cell(row=t_row, column=t_col + 3, value="新闻时间")
+        t_row = t_row + 1
+
+        data_top_new = self.en_soup.select('#wrapper > div > div.page-content > main > div.collection.collection-big-top > article > div.info > header > h2 > a')
+        m_href = data_top_new[0]['href']
+        m_href = self.have_video(m_href)
+        m_title = data_top_new[0].get_text()
+        sheet.cell(row=t_row, column=t_col, value=m_title)
+        sheet.cell(row=t_row, column=t_col + 1, value=m_href)
+        t_row = t_row + 1
+
+        datalist = self.en_soup.select('#wrapper > div > div.page-content > main > div.collection.collection-river.content > div')
+
+        for data in datalist:
+            news = data.find_all(class_='title')
+            for m_news in news:
+                m_news = m_news.find('a')
+                m_href = m_news['href']
+                m_title = m_news.get_text()
+                m_href = self.have_video(m_href)
+                sheet.cell(row=t_row, column=t_col, value=m_title)
+                sheet.cell(row=t_row, column=t_col + 1, value=m_href)
+                t_row = t_row + 1
+
+        try:
+            wb.save(self.xlsxname)
+        except Exception:
+            print("FOX Save Error = 2")
+
     def main(self, file_name):
         self.xlsxname = file_name
         Fox.request()
         Fox.get_bs_news()
+        Fox.request2()
+        Fox.get_en_news()
 
 Fox = FOX()
